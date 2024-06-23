@@ -1,0 +1,6 @@
+beautifulsoup4==4.12.3
+crewai==0.32.2
+crewai_tools==0.3.0
+pandas==2.2.2
+Requests==2.32.3
+streamlit==1.36.0
