@@ -30,11 +30,10 @@ from urllib.parse import urlparse, urljoin
 #from langchain.agents import Tool
 #from crewai_tools import tool 
 
-openai_api_key = "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" #"sk-proj-aNOUsGWH6Y8x8gzLb7NrT3BlbkFJyhn1yif6nIjmvBzg4rqo"  
-os.environ["OPENAI_API_KEY"] = openai_api_key
+os.environ["OPENAI_API_KEY"] = st.secrets.secrets.OPENAI_API_KEY
+os.environ["SERPER_API_KEY"] = st.secrets.secrets.SERPER_API_KEY
 os.environ["OPENAI_MODEL_NAME"] = "gpt-4-turbo" #"gpt-4o" #'gpt-3.5-turbo'
-os.environ["SERPER_API_KEY"] = "35561e31553b620b0e969632118309a8a8e97cfa" #"39e0e214195a28b4a87c48f13a22982728f35e968c87222a135ad5e64d8ccc5c"
-#os.environ["SERPAPI_API_KEY"] = "39e0e214195a28b4a87c48f13a22982728f35e968c87222a135ad5e64d8ccc5c"
+
 
 # Initialize the tools
 search_tool = SerperDevTool() #search #
