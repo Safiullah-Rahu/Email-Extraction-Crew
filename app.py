@@ -219,7 +219,7 @@ def get_internal_links(url):
 # Streamlit Page Configuration
 st.set_page_config(
     page_title="AI Agent Emaitraction -  LLM Email Search",
-    page_icon="logo.png",
+    page_icon="https://raw.githubusercontent.com/Safiullah-Rahu/Email-Extraction-Crew/main/logo_s.png",
     layout="wide",
     initial_sidebar_state="expanded",
     
@@ -267,7 +267,7 @@ def img_to_base64(image_path):
         return base64.b64encode(img_file.read()).decode()
 
 # Load and display sidebar image with glowing effect
-img_path = "logo_s.png"
+img_path = "https://raw.githubusercontent.com/Safiullah-Rahu/Email-Extraction-Crew/main/logo_s.png"
 img_base64 = img_to_base64(img_path)
 st.sidebar.markdown(
         f'<img src="data:image/png;base64,{img_base64}" class="cover-glow">',
