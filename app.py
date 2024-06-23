@@ -30,8 +30,8 @@ from urllib.parse import urlparse, urljoin
 #from langchain.agents import Tool
 #from crewai_tools import tool 
 
-os.environ["OPENAI_API_KEY"] = st.secrets.secrets.OPENAI_API_KEY
-os.environ["SERPER_API_KEY"] = st.secrets.secrets.SERPER_API_KEY
+os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+os.environ["SERPER_API_KEY"] = st.secrets["SERPER_API_KEY"]
 os.environ["OPENAI_MODEL_NAME"] = "gpt-4-turbo" #"gpt-4o" #'gpt-3.5-turbo'
 
 
