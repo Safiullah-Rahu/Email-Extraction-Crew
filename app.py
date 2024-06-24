@@ -499,6 +499,7 @@ if uploaded_file is not None:
     #res = None
     # df_["website"] = ""
     tot_ent = "Total schools: " + str(len(rows_as_strings))
+    st.info(tot_ent)
     k = st.number_input("Specify number of School to process", value=0, placeholder=tot_ent)
     k = int(k)
     if st.button("Run Website Search"):
