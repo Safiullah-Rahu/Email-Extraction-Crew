@@ -290,8 +290,8 @@ st.sidebar.markdown("""
             Instructions for use:
             
             1. Upload School Names and Addresses data
-            2. Proceed with "Run Website Search" to get websites for specific schools
-            3. Auto Agent Search will provide Emails and their URLs
+            2. Proceed with "Run Website Search" to get websites by specifying number of schools
+            3. Check "Email Search" then Agent Search will provide Emails and their URLs
             4. Observe results and download
         """)
 
@@ -496,7 +496,7 @@ if uploaded_file is not None:
     rows_as_strings = [' '.join(row) for row in rows_as_strings]
 
     k = 0
-    res = None
+    #res = None
     # df_["website"] = ""
     tot_ent = "Total schools: " + str(len(rows_as_strings))
     k = st.number_input("Specify number of School to process", value=0, placeholder=tot_ent)
@@ -513,71 +513,85 @@ if uploaded_file is not None:
         res, res_st = website_crew(rows_as_strings, k)
         df_ = df_[:k]
         df_["website"] = res
+        st.session_state.webb = res
         st.write("Found websites:")
         st.dataframe(df_)
         # Stop the stopwatch
         end_time = time.time()
         total_time = end_time - start_time
         stopwatch_placeholder.text(f"Total Time Elapsed: {total_time:.2f} seconds")
+
+    agent_email = st.checkbox("Email Search: Check this after website search!", value=False)
+    if agent_email:
+    # if 'clicked' not in st.session_state:
+    #     st.session_state.clicked = False
+
+    # def click_button():
+    #     st.session_state.clicked = True
+
+    # st.button('Email Search: Check this after website search!', on_click=click_button)
+
+    # if st.session_state.clicked:
+
+        st.header("Initiating Agent to Search")
+        #st.write("""Click "Start Searching" button so that agent will go through each website to find relevant emails.,""")
+
+        web_list = st.session_state.webb#df_["website"].tolist()
+
+        #if st.button("Run Email Search"):
+        # Placeholder for stopwatch
+        stopwatch_placeholder_ = st.empty()
+                
+        # Start the stopwatch
+        start_time_ = time.time()
+        # with st.expander("Processing!"):
+        #     #sys.stdout = StreamToExpander(st)
+        #     with st.spinner("Generating Results"):
+        res_e, res_st_e = email_crew(web_list)
+        # Initialize two empty lists
+        emails = []
+        urls = []
+
+        # Loop through each item in the original list
+        for item in res_e:
+            # Split the string by comma and strip any extra whitespace
+            parts = item.split(',')
+            email = parts[0].strip()
+            url = parts[1].strip()
+            
+            # Append the parts to their respective lists
+            emails.append(email)
+            urls.append(url)
+        df_ = df_[:len(web_list)]
+        df_["email"] = emails
+        df_["email_url"] = urls
+        st.write("Found emails:")
+        st.dataframe(df_)
+        # Stop the stopwatch
+        end_time_ = time.time()
+        total_time_ = end_time_ - start_time_
+        stopwatch_placeholder_.text(f"Total Time Elapsed: {total_time_:.2f} seconds")
+        
+        # # Convert the modified DataFrame back to an Excel file
+        output = io.BytesIO()
+        with pd.ExcelWriter(output) as writer:
+            df_.to_excel(writer, index=False, sheet_name='Sheet1')
+        processed_data = output.getvalue()
+
+        # Generate the current date and time
+        now = datetime.now()
+        date_time_str = now.strftime("%Y-%m-%d_%H-%M-%S")
+
+        # Create the file name with the current date and time
+        file_name = f"modified_file_{date_time_str}.xlsx"
+        #Download button for the modified Excel file
+        st.download_button(
+            label="Download Excel file",
+            data=processed_data,
+            file_name=file_name,
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+
             
     
-        if res is not None:
-
-            st.header("Initiating Agent to Search")
-            st.write("""Click "Start Searching" button so that agent will go through each website to find relevant emails.,""")
-
-            web_list = df_["website"].tolist()
-
-            #if st.button("Run Email Search"):
-            # Placeholder for stopwatch
-            stopwatch_placeholder_ = st.empty()
-                    
-            # Start the stopwatch
-            start_time_ = time.time()
-            # with st.expander("Processing!"):
-            #     #sys.stdout = StreamToExpander(st)
-            #     with st.spinner("Generating Results"):
-            res_e, res_st_e = email_crew(web_list)
-            # Initialize two empty lists
-            emails = []
-            urls = []
-
-            # Loop through each item in the original list
-            for item in res_e:
-                # Split the string by comma and strip any extra whitespace
-                parts = item.split(',')
-                email = parts[0].strip()
-                url = parts[1].strip()
-                
-                # Append the parts to their respective lists
-                emails.append(email)
-                urls.append(url)
-            df_ = df_
-            df_["email"] = emails
-            df_["email_url"] = urls
-            st.write("Found emails:")
-            st.dataframe(df_)
-            # Stop the stopwatch
-            end_time_ = time.time()
-            total_time_ = end_time_ - start_time_
-            stopwatch_placeholder_.text(f"Total Time Elapsed: {total_time_:.2f} seconds")
-            
-            # # Convert the modified DataFrame back to an Excel file
-            output = io.BytesIO()
-            with pd.ExcelWriter(output) as writer:
-                df_.to_excel(writer, index=False, sheet_name='Sheet1')
-            processed_data = output.getvalue()
-
-            # Generate the current date and time
-            now = datetime.now()
-            date_time_str = now.strftime("%Y-%m-%d_%H-%M-%S")
-
-            # Create the file name with the current date and time
-            file_name = f"modified_file_{date_time_str}.xlsx"
-            #Download button for the modified Excel file
-            st.download_button(
-                label="Download Excel file",
-                data=processed_data,
-                file_name=file_name,
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+      
