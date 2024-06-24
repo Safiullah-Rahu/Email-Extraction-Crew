@@ -537,6 +537,7 @@ if uploaded_file is not None:
         #st.write("""Click "Start Searching" button so that agent will go through each website to find relevant emails.,""")
 
         web_list = st.session_state.webb#df_["website"].tolist()
+        df_ = df_[:len(web_list)]
         df_["website"] = web_list
         #if st.button("Run Email Search"):
         # Placeholder for stopwatch
@@ -562,7 +563,7 @@ if uploaded_file is not None:
             # Append the parts to their respective lists
             emails.append(email)
             urls.append(url)
-        df_ = df_[:len(web_list)]
+        #df_ = df_[:len(web_list)]
         df_["email"] = emails
         df_["email_url"] = urls
         st.write("Found emails:")
