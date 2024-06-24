@@ -537,7 +537,7 @@ if uploaded_file is not None:
         #st.write("""Click "Start Searching" button so that agent will go through each website to find relevant emails.,""")
 
         web_list = st.session_state.webb#df_["website"].tolist()
-
+        df_["website"] = web_list
         #if st.button("Run Email Search"):
         # Placeholder for stopwatch
         stopwatch_placeholder_ = st.empty()
