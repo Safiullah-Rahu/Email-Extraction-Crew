@@ -26,16 +26,22 @@ from crewai_tools import ScrapeWebsiteTool, SerperDevTool
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse, urljoin
+from langchain_anthropic import ChatAnthropic
 #from langchain_community.utilities import SerpAPIWrapper #GoogleSerperAPIWrapper,
 #from langchain.agents import Tool
 #from crewai_tools import tool 
 
-openai_api_key = st.secrets.secrets.OPENAI_API_KEY
-os.environ["OPENAI_API_KEY"] = openai_api_key
+#openai_api_key = st.secrets.secrets.OPENAI_API_KEY
+#os.environ["OPENAI_API_KEY"] = openai_api_key
+anthropic_api_key = st.secrets.secrets.ANTHROPIC_API_KEY
+os.environ["ANTHROPIC_API_KEY"] = anthropic_api_key
 serp_api_key = st.secrets.secrets.SERPER_API_KEY
 os.environ["SERPER_API_KEY"] = serp_api_key
-os.environ["OPENAI_MODEL_NAME"] = "gpt-4-turbo" #"gpt-4o" #'gpt-3.5-turbo'
+#os.environ["OPENAI_MODEL_NAME"] = "gpt-4-turbo" #"gpt-4o" #'gpt-3.5-turbo'
 
+ClaudeHaiku = ChatAnthropic(
+    model="claude-3-haiku-20240307"
+)
 
 # Initialize the tools
 search_tool = SerperDevTool() #search #
@@ -300,7 +306,7 @@ st.title("AI Agent For Finding Emails")
 st.markdown("---")
 
 @st.cache_resource
-def website_crew(rows_as_strings, k):
+def website_crew(rows_as_strings, low, high):
     """This function will take school data as input and provide school official website by scraping the web via LLMs"""
     
     
@@ -320,6 +326,7 @@ def website_crew(rows_as_strings, k):
         #verbose = True,
         max_rpm=30000,
         #callbacks=[CustomStreamlitCallbackHandler(color="white")],
+        llm=ClaudeHaiku,
     )
     
     linkverifier_agent = Agent(
@@ -336,6 +343,7 @@ def website_crew(rows_as_strings, k):
         #verbose = True,
         max_rpm=30000,
         #callbacks=[CustomStreamlitCallbackHandler(color="white")],
+        llm=ClaudeHaiku,
     )
     
     # Creating Tasks
@@ -370,7 +378,7 @@ def website_crew(rows_as_strings, k):
     
     res = []
     res_st = ""
-    for i in range(len(rows_as_strings[:k])):
+    for i in range(len(rows_as_strings[low:high])):
         inputs = {"schools": rows_as_strings[i]}
         result = url_extraction_crew.kickoff(inputs=inputs)
         res.append(result)
@@ -402,6 +410,7 @@ def email_crew(web_list):
         allow_delegation = False,
         verbose = True,
         max_rpm=30000,
+        llm=ClaudeHaiku,
     )
 
     emailconfirm_agent = Agent(
@@ -419,6 +428,7 @@ def email_crew(web_list):
         allow_delegation = True,
         verbose = True,
         max_rpm=30000,
+        llm=ClaudeHaiku,
     )
     
     emailfinder_task = Task(
@@ -498,10 +508,19 @@ if uploaded_file is not None:
     k = 0
     #res = None
     # df_["website"] = ""
+    max_entries = int(len(rows_as_strings))
     tot_ent = "Total schools: " + str(len(rows_as_strings))
     st.info(tot_ent)
-    k = st.number_input("Specify number of School to process", value=0, placeholder=tot_ent)
-    k = int(k)
+    # Streamlit slider for rating range selection
+    df_range = st.slider("Please select a range", min_value=0, max_value=max_entries, value=(0, max_entries))
+    
+    # Unpack the tuple to get low and high values
+    low, high = df_range
+    st.session_state.loww = low
+    st.session_state.highh = high
+    
+    # k = st.number_input("Specify number of School to process", value=0, placeholder=tot_ent)
+    # k = int(k)
     if st.button("Run Website Search"):
         # Placeholder for stopwatch
         stopwatch_placeholder = st.empty()
@@ -511,12 +530,12 @@ if uploaded_file is not None:
         # with st.expander("Processing!"):
         #     #sys.stdout = StreamToExpander(st)
         #     with st.spinner("Generating Results"):
-        res, res_st = website_crew(rows_as_strings, k)
-        df_ = df_[:k]
-        df_["website"] = res
+        res, res_st = website_crew(rows_as_strings, low, high)
+        df = df[low:high]
+        df["website"] = res
         st.session_state.webb = res
         st.write("Found websites:")
-        st.dataframe(df_)
+        st.dataframe(df)
         # Stop the stopwatch
         end_time = time.time()
         total_time = end_time - start_time
@@ -538,8 +557,10 @@ if uploaded_file is not None:
         #st.write("""Click "Start Searching" button so that agent will go through each website to find relevant emails.,""")
 
         web_list = st.session_state.webb#df_["website"].tolist()
-        df_ = df_[:len(web_list)]
-        df_["website"] = web_list
+        low = st.session_state.loww
+        high = st.session_state.highh
+        df = df[low:high]
+        df["website"] = web_list
         #if st.button("Run Email Search"):
         # Placeholder for stopwatch
         stopwatch_placeholder_ = st.empty()
@@ -565,10 +586,10 @@ if uploaded_file is not None:
             emails.append(email)
             urls.append(url)
         #df_ = df_[:len(web_list)]
-        df_["email"] = emails
-        df_["email_url"] = urls
+        df["email"] = emails
+        df["email_url"] = urls
         st.write("Found emails:")
-        st.dataframe(df_)
+        st.dataframe(df)
         # Stop the stopwatch
         end_time_ = time.time()
         total_time_ = end_time_ - start_time_
@@ -577,7 +598,7 @@ if uploaded_file is not None:
         # # Convert the modified DataFrame back to an Excel file
         output = io.BytesIO()
         with pd.ExcelWriter(output) as writer:
-            df_.to_excel(writer, index=False, sheet_name='Sheet1')
+            df.to_excel(writer, index=False, sheet_name='Sheet1')
         processed_data = output.getvalue()
 
         # Generate the current date and time
