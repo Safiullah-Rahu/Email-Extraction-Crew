@@ -378,7 +378,7 @@ def website_crew(rows_as_strings, low, high):
     
     res = []
     res_st = ""
-    for i in range(low, high + 1):
+    for i in range(low, high):
         inputs = {"schools": rows_as_strings[i]}
         result = url_extraction_crew.kickoff(inputs=inputs)
         res.append(result)
