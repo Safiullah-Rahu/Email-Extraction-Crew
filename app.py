@@ -511,11 +511,13 @@ if uploaded_file is not None:
     max_entries = int(len(rows_as_strings))
     tot_ent = "Total schools: " + str(len(rows_as_strings))
     st.info(tot_ent)
-    # Streamlit slider for rating range selection
-    df_range = st.slider("Please select a range", min_value=0, max_value=max_entries, value=(0, max_entries))
+    st.write("Specify a range:")
+    low = st.number_input("From", value=0)
+    high = st.number_input("To", value=0)
+    #df_range = st.slider("Please select a range", min_value=0, max_value=max_entries, value=(0, max_entries))
     
     # Unpack the tuple to get low and high values
-    low, high = df_range
+    #low, high = df_range
     st.session_state.loww = low
     st.session_state.highh = high
     
@@ -531,7 +533,7 @@ if uploaded_file is not None:
         #     #sys.stdout = StreamToExpander(st)
         #     with st.spinner("Generating Results"):
         res, res_st = website_crew(rows_as_strings, low, high)
-        df = df[low:high]
+        df = df[low:high+1]
         df["website"] = res
         st.session_state.webb = res
         st.write("Found websites:")
@@ -559,7 +561,7 @@ if uploaded_file is not None:
         web_list = st.session_state.webb#df_["website"].tolist()
         low = st.session_state.loww
         high = st.session_state.highh
-        df = df[low:high]
+        df = df[low:high+1]
         df["website"] = web_list
         #if st.button("Run Email Search"):
         # Placeholder for stopwatch
