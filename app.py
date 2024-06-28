@@ -31,13 +31,13 @@ from langchain_anthropic import ChatAnthropic
 #from langchain.agents import Tool
 #from crewai_tools import tool 
 
-#openai_api_key = st.secrets.secrets.OPENAI_API_KEY
-#os.environ["OPENAI_API_KEY"] = openai_api_key
+openai_api_key = st.secrets.secrets.OPENAI_API_KEY
+os.environ["OPENAI_API_KEY"] = openai_api_key
 anthropic_api_key = st.secrets.secrets.ANTHROPIC_API_KEY
 os.environ["ANTHROPIC_API_KEY"] = anthropic_api_key
 serp_api_key = st.secrets.secrets.SERPER_API_KEY
 os.environ["SERPER_API_KEY"] = serp_api_key
-#os.environ["OPENAI_MODEL_NAME"] = "gpt-4-turbo" #"gpt-4o" #'gpt-3.5-turbo'
+os.environ["OPENAI_MODEL_NAME"] = "gpt-4-turbo" #"gpt-4o" #'gpt-3.5-turbo'
 
 ClaudeHaiku = ChatAnthropic(
     model="claude-3-haiku-20240307"
@@ -326,7 +326,7 @@ def website_crew(rows_as_strings, low, high):
         #verbose = True,
         max_rpm=30000,
         #callbacks=[CustomStreamlitCallbackHandler(color="white")],
-        llm=ClaudeHaiku,
+        #llm=ClaudeHaiku,
     )
     
     linkverifier_agent = Agent(
@@ -343,7 +343,7 @@ def website_crew(rows_as_strings, low, high):
         #verbose = True,
         max_rpm=30000,
         #callbacks=[CustomStreamlitCallbackHandler(color="white")],
-        llm=ClaudeHaiku,
+        #llm=ClaudeHaiku,
     )
     
     # Creating Tasks
@@ -410,7 +410,7 @@ def email_crew(web_list):
         allow_delegation = False,
         verbose = True,
         max_rpm=30000,
-        llm=ClaudeHaiku,
+        #llm=ClaudeHaiku,
     )
 
     emailconfirm_agent = Agent(
@@ -428,7 +428,7 @@ def email_crew(web_list):
         allow_delegation = True,
         verbose = True,
         max_rpm=30000,
-        llm=ClaudeHaiku,
+        #llm=ClaudeHaiku,
     )
     
     emailfinder_task = Task(
