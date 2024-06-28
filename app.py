@@ -532,6 +532,7 @@ if uploaded_file is not None:
         # with st.expander("Processing!"):
         #     #sys.stdout = StreamToExpander(st)
         #     with st.spinner("Generating Results"):
+        st.write(low, high)
         res, res_st = website_crew(rows_as_strings, low, high)
         df = df[low:high+1]
         df["website"] = res
