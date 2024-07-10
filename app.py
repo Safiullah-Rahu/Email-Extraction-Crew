@@ -396,15 +396,15 @@ def email_crew(web_list):
     
     emailfinder_agent = Agent(
         role="Official Email Finder",
-        goal="As a School Official, your job is finding email of Parent-Teacher Group/PTO/PTA/PTSA/PTSO/PTC/PFC from given school's website links",
+        goal="As a School Official, your task is to find the email of the Parent-Teacher Organization (PTO) or School Site Council (SSC) from the given school's website links.",
         backstory=(
-            "Your mission is to find the email of pta (parent teacher association), pto (parent teacher organization), ptsa (parent teacher student association), ptso (parent teacher student organization), ptc, (parent teacher club), PFC (parent faculty club) or FPC, " 
-            "from given official school website and its pages links: {school_website} "
-            "These emails are most often found on the community or family section of the school website but you can check on given links. "
-            "You are officially hired by School to perform science shows there and you need to find those emails "
-            "so that the shows are scheduled for children as they're excited about science. Children will be sad if you do not find the emails."
-            "Keep your responses and questions/inputs at minimum text to avoid rate limit error."
-            "Only provide Email or contact form or facebook page and URL from where you got that email in your response separated by comma. if you don't find email then just return 'not found, not found'."
+            "Your mission is to locate the email addresses of Parent-Teacher Group/PTO/PTA/PTSA/PTSO/PTC/PFC or SSC from the official school website: {school_website}. "
+            "If a PTO/SSC email is not found, look for the principal's email. "
+            "Do not generate or assume email addresses. Check the parent advocacy and community partnership pages of the website. "
+            "You are officially hired by the school to schedule science shows, and finding these emails is crucial for coordination. "
+            "Provide only the email address and the URL from where you found it, separated by a comma. "
+            "If no email is found, simply return 'not found, not found'. "
+            "Keep responses concise to avoid rate limit errors."
         ),
         tools=[scrape_tool],
         allow_delegation = False,
@@ -415,14 +415,15 @@ def email_crew(web_list):
 
     emailconfirm_agent = Agent(
         role="Senior Email Verifier",
-        goal="As a school official, you job is to counter verify that found email for given school website links is accurate",
+        goal="As a school official, your task is to verify that the email found for the given school website links is accurate.",
         backstory=(
-            "Access and observe school website links and confirm that pta (parent teacher association), pto (parent teacher organization), ptsa (parent teacher student association), ptso (parent teacher student organization), ptc, (parent teacher club), PFC (parent faculty club) or FPC Email is accurate, "
-            "You will be provided official school website and its native links."
-            "You are officially hired by School as researcher to verify those emails so that children's science shows can be scheduled on time "
-            "Children will be sad if you do not verify and provide accurate emails from school website."
-            "Keep your responses and questions/inputs at minimum text to avoid rate limit error."
-            "Only provide Email or contact form or facebook page and URL from where you got that email in your response separated by comma. if you don't find email then just return 'not found, not found'."
+            "Your mission is to confirm the accuracy of the email addresses found for the Parent-Teacher Group/PTO/PTA/PTSA/PTSO/PTC/PFC or SSC. "
+            "You will verify the email provided by accessing the official school website: {school_website}. "
+            "Do not generate or assume email addresses. Check the parent advocacy and community partnership pages of the website. "
+            "You are officially hired by the school to ensure that emails are correct for scheduling science shows, critical for the children's excitement. "
+            "Provide only the verified email and the URL from where you confirmed it, separated by a comma. "
+            "If no email is found or verified, simply return 'not found, not found'. "
+            "Keep responses concise to avoid rate limit errors."
         ),
         tools=[search_tool, scrape_tool],
         allow_delegation = True,
